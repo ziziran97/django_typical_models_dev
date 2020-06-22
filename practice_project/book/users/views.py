@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from .models import UserProfile, Book
 from rest_framework import mixins
 from rest_framework import generics
+from rest_framework import viewsets
+from rest_framework.permissions import BasePermission
 
 # Create your views here.
 
@@ -89,3 +91,38 @@ class BookMixinView2(generics.ListAPIView):
                 return Response('冇钱啊，大兄弟')
         else:
             return Response('注册先')
+
+class IsDeveloper(BasePermission):
+    message = '先注册呗'
+    def has_permission(self, request, view):
+        APIKey = request.query_params.get('apikey', 0)
+        developer = UserProfile.objects.filter(APIkey=APIKey).first()
+        if developer:
+            return True
+        else:
+            print(self.message)
+            return False
+
+class EnoughMoney(BasePermission):
+    message = '冇钱啊，充值先'
+    def has_permission(self, request, view):
+        APIKey = request.query_params.get('apikey', 0)
+        developer = UserProfile.objects.filter(APIkey=APIKey).first()
+        balance = developer.money
+        if balance > 0:
+            developer.money -= 1
+            developer.save()
+            return True
+        else:
+            return False
+
+class BookModelViewSet(viewsets.ModelViewSet):
+    authentication_classes = []
+    permission_classes = [IsDeveloper, EnoughMoney]
+    queryset = Book.objects.all()
+    serializer_class = BookModelSerializer
+    def get_queryset(self):
+        isbn = self.request.query_params.get('isbn', 0)
+        books = Book.objects.filter(isbn=int(isbn))
+        queryset = books
+        return queryset
