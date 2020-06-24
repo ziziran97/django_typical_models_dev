@@ -5,13 +5,13 @@
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /demo1/src/App.vue
---> 
+-->
 <template>
 <div id="app">
   <div class="all">
     <div class="one">
       <div class="oneType" v-for="(item,index) in one" :key="index">
-        <b>{{ one[index] }}</b>
+        <b>{{ one[index].name }}</b>
       </div>
     </div>
     <div class="twothreefour">
@@ -19,16 +19,16 @@
         <div class="twoType"
         v-for="(item, index) in two" :key="index"
         @mouseenter="open(index)">
-          <b>{{ two[index] }}</b>
+          <b>{{ two[index].name }}</b>
         </div>
       </div>
         <div class="threefour" v-if="flag"
         @mouseleave="close()">
-        <div class="threefourType" v-for="(item, index) in three" :key=
+        <div class="threefourType" v-for="(item, index) in three1" :key=
         "index">
-          <span class="three">{{ three[index] }}</span>
-          <span class="four" v-for="(item4, index4) in four" :key="index4">
-            {{ four[index4] }}
+          <span class="three">{{ three1[index] }}</span>
+          <span class="four" v-for="(item4, index4) in four1" :key="index4">
+            {{ four1[index4] }}&nbsp;
           </span>
         </div>
       </div>
@@ -38,29 +38,51 @@
 </template>
 
 <script>
-export default{
-  name:'app',
-  data(){
-    return{
-      one:['一级类目', '一级类目', '一级类目', '一级类目', '一级类目'],
-      two:['二阶类目1', '二阶类目2', '二阶类目3', '二阶类目4', '二阶类目5'],
-      three:[],
-      four:['四级类目', '四级类目', '四级类目', '四级类目', '四级类目'],
-      flag:false
-    }
-  },
-  methods:{
-    open(index){
-      var index = index + 1;
-      var i = index + "";
-      this.three = ['三级目录'+i, '三级目录'+i, '三级目录'+i, '三级目录'+i, '三级目录'+i, ]
-      this.flag = true
+  import Axios from 'axios'
+  export default{
+    name: 'app',
+    data(){
+      return{
+        one:[],
+        two:[],
+        three:[],
+        four:[],
+        flag:false,
+        three1:[],
+        four1:[]
+      }
     },
-    close(){
-      this.flag = false
+    methods: {
+      getData() {
+        const api = 'http://127.0.0.1:8000';
+        var api1 = api + 'api/Type1';
+        var api2 = api + 'api/Type2';
+        var api3 = api + 'api/Type3';
+        var api4 = api + 'api/Type4';
+        Axios.get(api1)
+        .then(function(response){
+          // console.log(response);
+          for (var i=0; i<response.data.length; i++){
+            // console.log(response.data[i])
+            Type1.push(response.data[i])
+          }
+          // console.log(Type1)
+        })
+        .catch(function (error){
+          console.log(error);
+        });
+        this.one = Type1;
+        Axios.get(api2)
+        .then(function (response){
+          // console.log(response)
+          for (var i=0;i<response.data.length;i++){
+            // console.log(response.data[i])
+
+          }
+        })
+      }
     }
-  },
-}
+  }
 </script>
 
 <style>
