@@ -1,3 +1,5 @@
+# 第二章 用Django REST framework实现豆瓣API应用
+
 ## 2.1豆瓣API功能介绍
 
 豆瓣图书API功能原理是用户通过输入图书的ISBN号（书号）、书名、作者、出版社等部分信息，就可获取到该图书在豆瓣上的所有信息。当然，API中除了包含检索信息之外，还要包含开发者的apikey，有此向开发者收费。
@@ -38,4 +40,6 @@ def get(self, request, *args, **kwargs):
 而使用generics.ListAPIView则可以不用加这个函数，因为generics.ListAPIView相对于mixins.ListModelMixin+generics.GenericAPIView而言，所谓的封装，就是封装了一个get函数罢了。
 
 ### 2.3.3 用viewsets+Router的方式实现视图封装
+
+*注意：* Django REST framework的权限组件有一个原则，即没有认证就没有权限！所有我们可以看见，在视图类BookModelViewSet中不但加入了permission_classes=[IsDevelop, EnoughMoney],还加入了authentication_classes=[]这样一个空列表。这一行代码是必须加的，如果不加，虽然权限组件依然起作用，但是在权限不通过的时候，detail将不会显示我们定义的message的内容，而永远只是提示未通过。
 
